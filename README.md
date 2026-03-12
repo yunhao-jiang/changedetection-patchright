@@ -27,7 +27,7 @@ docker run -d \
   ghcr.io/yunhao-jiang/changedetection-patchright:latest
 ```
 
-Then open [http://localhost:5000](http://localhost:5000) in your browser.
+For everything else, such as environment variables, datastore volumes, follow github.com/dgtlmoon/changedetection.io
 
 ### Build locally
 
