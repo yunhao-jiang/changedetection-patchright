@@ -1,0 +1,87 @@
+name: Rebuild on changedetection.io update
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  check-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get upstream image digest
+        id: upstream
+        run: |
+          DIGEST=$(curl -fsSL "https://hub.docker.com/v2/repositories/dgtlmoon/changedetection.io/tags/latest/" | jq -r '.digest')
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          SHORT=${DIGEST#sha256:}
+          echo "short=$(echo $SHORT | cut -c1-12)" >> "$GITHUB_OUTPUT"
+
+      - name: Get upstream GitHub release version
+        id: release
+        run: |
+          VERSION=$(curl -fsSL "https://api.github.com/repos/dgtlmoon/changedetection.io/releases/latest" | jq -r '.tag_name')
+          VERSION="${VERSION#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Read saved digest
+        id: saved
+        run: |
+          if [ -f .github/changedetection.digest ]; then
+            echo "digest=$(cat .github/changedetection.digest)" >> "$GITHUB_OUTPUT"
+          else
+            echo "digest=none" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set image name
+        if: steps.upstream.outputs.digest != steps.saved.outputs.digest
+        run: |
+          IMAGE_NAME=$(echo "${{ github.repository_owner }}/changedetection-patchright" | tr '[:upper:]' '[:lower:]')
+          echo "IMAGE_NAME=$IMAGE_NAME" >> "$GITHUB_ENV"
+
+      - name: Login to GHCR
+        if: steps.upstream.outputs.digest != steps.saved.outputs.digest
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        if: steps.upstream.outputs.digest != steps.saved.outputs.digest
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_NAME }}:latest
+            ghcr.io/${{ env.IMAGE_NAME }}:${{ steps.release.outputs.version }}
+            ghcr.io/${{ env.IMAGE_NAME }}:sha-${{ steps.upstream.outputs.short }}
+          labels: |
+            org.opencontainers.image.title=changedetection-patchright
+            org.opencontainers.image.version=${{ steps.release.outputs.version }}
+            org.opencontainers.image.base.name=dgtlmoon/changedetection.io:latest
+            org.opencontainers.image.base.digest=${{ steps.upstream.outputs.digest }}
+
+      - name: Save new digest
+        if: steps.upstream.outputs.digest != steps.saved.outputs.digest
+        run: |
+          mkdir -p .github
+          echo "${{ steps.upstream.outputs.digest }}" > .github/changedetection.digest
+
+      - name: Commit digest
+        if: steps.upstream.outputs.digest != steps.saved.outputs.digest
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .github/changedetection.digest
+          git commit -m "Track changedetection.io ${{ steps.release.outputs.version }} (${{ steps.upstream.outputs.short }})" || exit 0
+          git push
