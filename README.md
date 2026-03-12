@@ -2,6 +2,9 @@
 
 A Docker wrapper for [changedetection.io](https://github.com/dgtlmoon/changedetection.io) that replaces Playwright with [patchright](https://github.com/Kaliiiiiiiiii-Vinyzu/patchright) as the browser automation backend.
 
+> ⚠️ Warning:
+> This project is a personal project and has no official support from changedetection.io. Please use at your own risks.
+
 ## What This Is
 
 [changedetection.io](https://github.com/dgtlmoon/changedetection.io) is a self-hosted web change detection and monitoring application. This project produces a drop-in Docker image that swaps out Playwright for patchright — a patched Playwright fork designed to avoid bot detection — without requiring any changes to changedetection.io itself.
