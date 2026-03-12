@@ -27,7 +27,7 @@ docker run -d \
   ghcr.io/yunhao-jiang/changedetection-patchright:latest
 ```
 
-For everything else, such as environment variables, datastore volumes, follow github.com/dgtlmoon/changedetection.io
+For configurations, usage, enviornmentvariable, etc., please visit the [official repo](github.com/dgtlmoon/changedetection.io).
 
 ### Build locally
 
@@ -68,16 +68,6 @@ sys.modules["playwright._impl._errors"] = patchright._impl._errors
 
 Any code that does `import playwright` therefore transparently receives `patchright` instead, with no source-code changes required in changedetection.io.
 
-### `Dockerfile`
-
-```dockerfile
-FROM dgtlmoon/changedetection.io:latest
-
-RUN pip install --no-cache-dir patchright \
-    && pip uninstall -y playwright || true
-
-COPY sitecustomize.py /usr/local/lib/python3.11/site-packages/sitecustomize.py
-```
 
 ## Credits
 
