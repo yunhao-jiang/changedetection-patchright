@@ -2,7 +2,7 @@ name: Rebuild on changedetection.io update
 
 on:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "0 */12 * * *"
   workflow_dispatch:
 
 permissions:
@@ -39,7 +39,7 @@ jobs:
         run: |
           if [ -f .github/changedetection.digest ]; then
             echo "digest=$(cat .github/changedetection.digest)" >> "$GITHUB_OUTPUT"
-            echo "Saved Digest: $(cat .github/changedetection.digest)"
+            echo "Saved digest: $(cat .github/changedetection.digest)"
           else
             echo "digest=none" >> "$GITHUB_OUTPUT"
             echo "No saved digest"
