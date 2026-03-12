@@ -30,6 +30,7 @@ jobs:
         run: |
           VERSION=$(curl -fsSL "https://api.github.com/repos/dgtlmoon/changedetection.io/releases/latest" | jq -r '.tag_name')
           VERSION="${VERSION#v}"
+          echo "Latest version from upstream: $VERSION"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Read saved digest
