@@ -30,7 +30,7 @@ docker run -d \
   ghcr.io/yunhao-jiang/changedetection-patchright:latest
 ```
 
-For configurations, usage, enviornmentvariable, etc., please visit the [official repo](github.com/dgtlmoon/changedetection.io).
+For configurations, usage, enviornment variable, etc., please visit the [official repo](github.com/dgtlmoon/changedetection.io).
 
 ### Build locally
 
