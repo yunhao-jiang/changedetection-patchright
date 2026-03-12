@@ -3,7 +3,7 @@
 A Docker wrapper for [changedetection.io](https://github.com/dgtlmoon/changedetection.io) that replaces Playwright with [patchright](https://github.com/Kaliiiiiiiiii-Vinyzu/patchright) as the browser automation backend.
 
 > [!WARNING]
-> This project is a personal project and has no official support from changedetection.io. Please use at your own risks. Patchright passes most, but not all the Playwright tests. Some bugs are considered impossible to solve, some are just not relevant. See the list of bugs and their explanation [here](https://github.com/Kaliiiiiiiiii-Vinyzu/patchright/issues/30).
+> This project is a personal project and has no official support from changedetection.io. Please use at your own risks.
 
 ## What This Is
 
